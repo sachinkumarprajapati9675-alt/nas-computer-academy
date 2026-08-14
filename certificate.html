@@ -9,6 +9,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- Signature Font Import -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+
 <style>
 
 *{
@@ -146,6 +151,7 @@ body{
 .signature-area{
     display:flex;
     justify-content:space-between;
+    align-items:flex-end;
     gap:20px;
     margin-top:45px;
     font-family:Arial,sans-serif;
@@ -156,6 +162,16 @@ body{
     border-top:1px solid #555;
     padding-top:7px;
     font-size:12px;
+    position:relative;
+}
+
+.sign-text{
+    font-family: 'Great Vibes', cursive;
+    font-size: 32px;
+    color: #0b3158;
+    display: block;
+    margin-bottom: -8px;
+    margin-top: -30px;
 }
 
 .seal{
@@ -207,6 +223,7 @@ button{
     font-family:Arial,sans-serif;
     font-weight:bold;
     font-size:14px;
+    cursor:pointer;
 }
 
 .back{
@@ -375,6 +392,7 @@ button{
 <div class="signature-area">
 
     <div class="signature">
+        <span class="sign-text">Sachin</span>
         Director / Authorized Signatory
     </div>
 
@@ -646,4 +664,4 @@ loadCertificate();
 
 
 </body>
-</html>
+</htm

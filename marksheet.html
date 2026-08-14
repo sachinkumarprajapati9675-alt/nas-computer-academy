@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Student Marksheet - NAS Computer Academy</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#eef3f8;
+    color:#172033;
+}
+
+.header{
+    background:linear-gradient(135deg,#071a33,#123f70);
+    color:white;
+    text-align:center;
+    padding:22px 15px;
+}
+
+.header h1{
+    font-size:23px;
+}
+
+.header p{
+    margin-top:6px;
+    color:#dce8f5;
+    font-size:13px;
+}
+
+.container{
+    max-width:850px;
+    margin:25px auto;
+    padding:0 15px;
+}
+
+.marksheet{
+    background:white;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.15);
+}
+
+.top{
+    background:#0b3158;
+    color:white;
+    text-align:center;
+    padding:25px;
+}
+
+.top h2{
+    font-size:26px;
+}
+
+.top p{
+    margin-top:6px;
+    color:#dce8f5;
+}
+
+.student{
+    padding:20px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.info{
+    border:1px solid #e0e5eb;
+    border-radius:8px;
+    padding:12px;
+}
+
+.label{
+    color:#777;
+    font-size:12px;
+}
+
+.value{
+    margin-top:5px;
+    font-weight:bold;
+    color:#0b3158;
+}
+
+table{
+    width:calc(100% - 40px);
+    margin:0 20px 20px;
+    border-collapse:collapse;
+}
+
+th,td{
+    border:1px solid #d9e0e7;
+    padding:12px 8px;
+    text-align:center;
+}
+
+th{
+    background:#0b3158;
+    color:white;
+    font-size:13px;
+}
+
+td{
+    font-size:13px;
+}
+
+.total{
+    font-weight:bold;
+    background:#f1f5f9;
+}
+
+.result{
+    margin:20px;
+    padding:18px;
+    border-radius:10px;
+    background:#eef8f1;
+    text-align:center;
+}
+
+.result h3{
+    color:#16803c;
+}
+
+.result p{
+    margin-top:6px;
+    font-size:14px;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:18px;
+}
+
+button{
+    flex:1;
+    padding:13px;
+    border:0;
+    border-radius:9px;
+    background:#0b3158;
+    color:white;
+    font-weight:bold;
+    font-size:14px;
+}
+
+.back{
+    display:block;
+    text-align:center;
+    margin:20px;
+    color:#0b3158;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.loading{
+    text-align:center;
+    padding:30px;
+    color:#777;
+}
+
+.error{
+    display:none;
+    margin:20px;
+    padding:15px;
+    border-radius:9px;
+    background:#fff0f0;
+    color:#b00020;
+    text-align:center;
+    font-size:13px;
+}
+
+@media(max-width:600px){
+    .student{
+        grid-template-columns:1fr;
+    }
+
+    th,td{
+        padding:9px 5px;
+        font-size:11px;
+    }
+}
+
+@media print{
+    body{
+        background:white;
+    }
+
+    .header,
+    .actions,
+    .back{
+        display:none;
+    }
+
+    .container{
+        margin:0;
+        max-width:none;
+    }
+
+    .marksheet{
+        box-shadow:none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>NAS COMPUTER ACADEMY</h1>
+    <p>Student Marksheet</p>
+</div>
+
+<div class="container">
+
+<div class="marksheet">
+
+<div class="top">
+    <h2>MARKSHEET</h2>
+    <p>Student Academic Result</p>
+</div>
+
+<div class="loading" id="loading">
+    Result loading...
+</div>
+
+<div class="error" id="errorMessage"></div>
+
+<div id="content" style="display:none;">
+
+<div class="student">
+
+    <div class="info">
+        <div class="label">Student Name</div>
+        <div class="value" id="studentName">-</div>
+    </div>
+
+    <div class="info">
+        <div class="label">Father's Name</div>
+        <div class="value" id="fatherName">-</div>
+    </div>
+
+    <div class="info">
+        <div class="label">Course</div>
+        <div class="value" id="course">-</div>
+    </div>
+
+    <div class="info">
+        <div class="label">Roll No.</div>
+        <div class="value" id="rollNo">-</div>
+    </div>
+
+</div>
+
+<table>
+
+<thead>
+<tr>
+    <th>Subject</th>
+    <th>Max Marks</th>
+    <th>Obtained</th>
+    <th>Grade</th>
+</tr>
+</thead>
+
+<tbody>
+
+<tr>
+    <td>Computer Fundamentals</td>
+    <td>100</td>
+    <td id="m1">-</td>
+    <td id="g1">-</td>
+</tr>
+
+<tr>
+    <td>MS Office</td>
+    <td>100</td>
+    <td id="m2">-</td>
+    <td id="g2">-</td>
+</tr>
+
+<tr>
+    <td>Internet & Digital Skills</td>
+    <td>100</td>
+    <td id="m3">-</td>
+    <td id="g3">-</td>
+</tr>
+
+<tr>
+    <td>Typing</td>
+    <td>100</td>
+    <td id="m4">-</td>
+    <td id="g4">-</td>
+</tr>
+
+<tr>
+    <td>Practical</td>
+    <td>100</td>
+    <td id="m5">-</td>
+    <td id="g5">-</td>
+</tr>
+
+<tr class="total">
+    <td>Total</td>
+    <td>500</td>
+    <td id="total">-</td>
+    <td id="percentage">-</td>
+</tr>
+
+</tbody>
+
+</table>
+
+<div class="result">
+
+    <h3 id="resultText">RESULT</h3>
+
+    <p>
+        Percentage:
+        <b id="percentText">-</b>
+    </p>
+
+    <p>
+        Grade:
+        <b id="finalGrade">-</b>
+    </p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="actions">
+
+    <button onclick="window.print()">
+        🖨️ Print / Save
+    </button>
+
+    <button onclick="goDashboard()">
+        ← Dashboard
+    </button>
+
+</div>
+
+<a href="student.html" class="back">
+    Student Dashboard
+</a>
+
+</div>
+
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+'https://ajfgbupabmykfhnaziee.supabase.co';
+
+const SUPABASE_KEY =
+'sb_publishable_-5AKwaHBuvhnYu-PwoF6NQ__auTupxV';
+
+const db =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =========================
+   LOGIN CHECK
+========================= */
+
+const rollNo =
+localStorage.getItem("studentRollNo");
+
+if(!rollNo){
+
+    window.location.href = "login.html";
+
+}
+
+
+/* =========================
+   GRADE
+========================= */
+
+function getGrade (mark){
+
+    if(mark >= 90) return "A+";
+    if(mark >= 80) return "A";
+    if(mark >= 70) return "B+";
+    if(mark >= 60) return "B";
+    if(mark >= 50) return "C";
+    if(mark >= 40) return "D";
+
+    return "F";
+}
+
+
+/* =========================
+   LOAD MARKSHEET
+========================= */
+
+async function loadMarksheet(){
+
+    const loading =
+        document.getElementById("loading");
+
+    const errorBox =
+        document.getElementById("errorMessage");
+
+    try{
+
+        const result =
+        await db
+        .from("students")
+        .select(`
+            student_name,
+            father_name,
+            course,
+            roll_no,
+            computer_fundamentals,
+            ms_office,
+            internet_skills,
+            typing,
+            practical
+        `)
+        .eq("roll_no", rollNo)
+        .maybeSingle();
+
+
+        if(result.error){
+
+            throw result.error;
+
+        }
+
+
+        if(!result.data){
+
+            throw new Error(
+                "Student record नहीं मिला।"
+            );
+
+        }
+
+
+        const student =
+            result.data;
+
+
+        /* STUDENT DETAILS */
+
+        document.getElementById(
+            "studentName"
+        ).innerText =
+            student.student_name || "-";
+
+
+        document.getElementById(
+            "fatherName"
+        ).innerText =
+            student.father_name || "-";
+
+
+        document.getElementById(
+            "course"
+        ).innerText =
+            student.course || "-";
+
+
+        document.getElementById(
+            "rollNo"
+        ).innerText =
+            student.roll_no || "-";
+
+
+        /* MARKS */
+
+        const marks = [
+
+            Number(student.computer_fundamentals) || 0,
+
+            Number(student.ms_office) || 0,
+
+            Number(student.internet_skills) || 0,
+
+            Number(student.typing) || 0,
+
+            Number(student.practical) || 0
+
+        ];
+
+
+        let total = 0;
+
+
+        marks.forEach((mark,index)=>{
+
+            total += mark;
+
+
+            document.getElementById(
+                "m" + (index + 1)
+            ).innerText = mark;
+
+
+            document.getElementById(
+                "g" + (index + 1)
+            ).innerText =
+                getGrade(mark);
+
+        });
+
+
+        /* TOTAL */
+
+        const percentage =
+            total / 5;
+
+
+        document.getElementById(
+            "total"
+        ).innerText =
+            total;
+
+
+        document.getElementById(
+            "percentage"
+        ).innerText =
+            percentage.toFixed(2) + "%";
+
+
+        document.getElementById(
+            "percentText"
+        ).innerText =
+            percentage.toFixed(2) + "%";
+
+
+        /* FINAL GRADE */
+
+        document.getElementById(
+            "finalGrade"
+        ).innerText =
+            getGrade(percentage);
+
+
+        /* RESULT */
+
+        document.getElementById(
+            "resultText"
+        ).innerText =
+            percentage >= 40
+                ? "✓ PASS"
+                : "✗ FAIL";
+
+
+        loading.style.display =
+            "none";
+
+
+        document.getElementById(
+            "content"
+        ).style.display =
+            "block";
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        loading.style.display =
+            "none";
+
+        errorBox.innerHTML =
+            "Marksheet load नहीं हो सकी।<br>" +
+            error.message;
+
+        errorBox.style.display =
+            "block";
+
+    }
+
+}
+
+
+/* =========================
+   DASHBOARD
+========================= */
+
+function goDashboard(){
+
+    window.location.href =
+        "student.html";
+
+}
+
+
+loadMarksheet();
+
+</script>
+
+</body>
+</html>

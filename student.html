@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Student Dashboard - NAS Computer Academy</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#eef3f8;
+    color:#172033;
+    min-height:100vh;
+}
+
+.header{
+    background:linear-gradient(135deg,#071a33,#123f70);
+    color:white;
+    padding:22px 18px;
+    text-align:center;
+}
+
+.header h1{
+    font-size:22px;
+}
+
+.header p{
+    margin-top:6px;
+    color:#dce8f5;
+    font-size:13px;
+}
+
+.container{
+    max-width:600px;
+    margin:25px auto;
+    padding:0 15px;
+}
+
+.profile{
+    background:white;
+    border-radius:18px;
+    padding:22px;
+    text-align:center;
+    box-shadow:0 8px 25px rgba(0,0,0,.12);
+}
+
+.photo{
+    width:90px;
+    height:90px;
+    margin:auto;
+    border-radius:50%;
+    overflow:hidden;
+    background:#e6edf5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:38px;
+    border:4px solid #dce6f0;
+}
+
+.photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:none;
+}
+
+.profile h2{
+    margin-top:12px;
+    color:#0b3158;
+}
+
+.roll{
+    margin-top:5px;
+    color:#777;
+    font-size:13px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    margin-top:20px;
+}
+
+.card{
+    background:white;
+    border-radius:15px;
+    padding:22px 12px;
+    text-align:center;
+    text-decoration:none;
+    color:#172033;
+    box-shadow:0 6px 18px rgba(0,0,0,.1);
+    transition:.2s;
+}
+
+.card:active{
+    transform:scale(.97);
+}
+
+.icon{
+    font-size:34px;
+    margin-bottom:10px;
+}
+
+.card h3{
+    font-size:15px;
+    color:#0b3158;
+}
+
+.card p{
+    margin-top:5px;
+    font-size:11px;
+    color:#777;
+}
+
+.logout{
+    width:100%;
+    margin-top:22px;
+    padding:13px;
+    border:0;
+    border-radius:10px;
+    background:#b00020;
+    color:white;
+    font-size:15px;
+    font-weight:bold;
+}
+
+.footer{
+    text-align:center;
+    padding:25px;
+    color:#777;
+    font-size:11px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>NAS COMPUTER ACADEMY</h1>
+    <p>Student Dashboard</p>
+</div>
+
+
+<div class="container">
+
+    <div class="profile">
+
+        <div class="photo">
+
+            <span id="photoIcon">👨‍🎓</span>
+
+            <img
+                id="studentPhoto"
+                alt="Student Photo"
+            >
+
+        </div>
+
+        <h2 id="studentName">
+            Student
+        </h2>
+
+        <div class="roll">
+            Roll No:
+            <strong id="rollNo">
+                -
+            </strong>
+        </div>
+
+    </div>
+
+
+    <div class="grid">
+
+        <a
+            href="idcard.html"
+            class="card"
+        >
+            <div class="icon">
+                🪪
+            </div>
+
+            <h3>
+                My ID Card
+            </h3>
+
+            <p>
+                Student Identity Card
+            </p>
+        </a>
+
+
+        <a
+            href="certificate.html"
+            class="card"
+        >
+            <div class="icon">
+                🏆
+            </div>
+
+            <h3>
+                My Certificate
+            </h3>
+
+            <p>
+                View Certificate
+            </p>
+        </a>
+
+
+        <a
+            href="marksheet.html"
+            class="card"
+        >
+            <div class="icon">
+                📊
+            </div>
+
+            <h3>
+                My Marksheet
+            </h3>
+
+            <p>
+                View Result
+            </p>
+        </a>
+
+
+        <a
+            href="index.html"
+            class="card"
+        >
+            <div class="icon">
+                🏠
+            </div>
+
+            <h3>
+                Home
+            </h3>
+
+            <p>
+                Main Website
+            </p>
+        </a>
+
+    </div>
+
+
+    <button
+        class="logout"
+        onclick="logoutStudent()"
+    >
+        🚪 Logout
+    </button>
+
+</div>
+
+
+<div class="footer">
+    © 2026 NAS Computer Academy
+</div>
+
+
+<script>
+
+/* =========================
+   CHECK LOGIN
+========================= */
+
+const rollNo =
+localStorage.getItem(
+    "studentRollNo"
+);
+
+const studentName =
+localStorage.getItem(
+    "studentName"
+);
+
+constfatherName =
+localStorage.getItem(
+    "fatherName"
+);
+
+const studentPhoto =
+localStorage.getItem(
+    "studentPhoto"
+);
+
+
+if(!rollNo){
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+/* =========================
+   SHOW DATA
+========================= */
+
+document.getElementById(
+    "studentName"
+).innerText =
+    studentName || "Student";
+
+
+document.getElementById(
+    "rollNo"
+).innerText =
+    rollNo || "-";
+
+
+/* =========================
+   SHOW PHOTO
+========================= */
+
+if(studentPhoto){
+
+    const image =
+    document.getElementById(
+        "studentPhoto"
+    );
+
+    const icon =
+    document.getElementById(
+        "photoIcon"
+    );
+
+    image.src =
+        studentPhoto;
+
+    image.style.display =
+        "block";
+
+    icon.style.display =
+        "none";
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+function logoutStudent(){
+
+    localStorage.removeItem(
+        "studentRollNo"
+    );
+
+    localStorage.removeItem(
+        "studentName"
+    );
+
+    localStorage.removeItem(
+        "fatherName"
+    );
+
+    localStorage.removeItem(
+        "studentPhoto"
+    );
+
+    window.location.href =
+        "index.html";
+}
+
+</script>
+
+</body>
+</html>

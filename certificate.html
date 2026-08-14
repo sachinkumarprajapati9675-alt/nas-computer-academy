@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Certificate - NAS Computer Academy</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Georgia,"Times New Roman",serif;
+    background:#eef3f8;
+    color:#172033;
+    min-height:100vh;
+}
+
+.header{
+    background:#071a33;
+    color:white;
+    text-align:center;
+    padding:20px 15px;
+    font-family:Arial,sans-serif;
+}
+
+.header h1{
+    font-size:22px;
+}
+
+.header p{
+    margin-top:5px;
+    color:#dce8f5;
+    font-size:13px;
+}
+
+.container{
+    max-width:900px;
+    margin:25px auto;
+    padding:0 15px;
+}
+
+.certificate{
+    background:#fffdf5;
+    border:12px solid #c69a35;
+    border-radius:8px;
+    padding:10px;
+    box-shadow:0 10px 30px rgba(0,0,0,.18);
+}
+
+.inner{
+    border:3px solid #0b3158;
+    padding:35px 25px;
+    text-align:center;
+    min-height:600px;
+    position:relative;
+}
+
+.logo{
+    font-family:Arial,sans-serif;
+    font-weight:bold;
+    font-size:28px;
+    color:#0b3158;
+    letter-spacing:1px;
+}
+
+.subtitle{
+    color:#9a7625;
+    font-family:Arial,sans-serif;
+    font-weight:bold;
+    margin-top:6px;
+    letter-spacing:2px;
+    font-size:12px;
+}
+
+.title{
+    font-size:42px;
+    color:#9a7625;
+    margin-top:35px;
+    letter-spacing:3px;
+}
+
+.present{
+    margin-top:15px;
+    font-size:16px;
+    color:#555;
+}
+
+.photo{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    margin:18px auto;
+    border:4px solid #c69a35;
+    overflow:hidden;
+    background:#e8edf3;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:Arial,sans-serif;
+    font-size:38px;
+}
+
+.photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:none;
+}
+
+.student-name{
+    font-size:32px;
+    color:#0b3158;
+    font-weight:bold;
+    margin:10px 0;
+}
+
+.text{
+    font-size:16px;
+    line-height:1.8;
+    color:#444;
+}
+
+.course{
+    color:#0b3158;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.info{
+    margin:18px auto;
+    max-width:600px;
+    font-family:Arial,sans-serif;
+    font-size:13px;
+    color:#555;
+}
+
+.signature-area{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    margin-top:45px;
+    font-family:Arial,sans-serif;
+}
+
+.signature{
+    width:40%;
+    border-top:1px solid #555;
+    padding-top:7px;
+    font-size:12px;
+}
+
+.seal{
+    width:90px;
+    height:90px;
+    border:3px solid #c69a35;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#9a7625;
+    font-weight:bold;
+    font-size:11px;
+    margin:auto;
+}
+
+.loading{
+    text-align:center;
+    padding:30px;
+    font-family:Arial,sans-serif;
+    color:#777;
+}
+
+.error{
+    display:none;
+    background:#fff0f0;
+    color:#b00020;
+    padding:15px;
+    border-radius:10px;
+    margin:15px 0;
+    text-align:center;
+    font-family:Arial,sans-serif;
+    font-size:13px;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:18px;
+}
+
+button{
+    flex:1;
+    padding:13px;
+    border:0;
+    border-radius:9px;
+    background:#0b3158;
+    color:white;
+    font-family:Arial,sans-serif;
+    font-weight:bold;
+    font-size:14px;
+}
+
+.back{
+    display:block;
+    text-align:center;
+    margin:20px;
+    color:#0b3158;
+    text-decoration:none;
+    font-family:Arial,sans-serif;
+    font-weight:bold;
+}
+
+@media(max-width:600px){
+
+    .certificate{
+        border-width:7px;
+    }
+
+    .inner{
+        padding:25px 12px;
+        min-height:550px;
+    }
+
+    .title{
+        font-size:31px;
+    }
+
+    .student-name{
+        font-size:25px;
+    }
+
+    .signature-area{
+        margin-top:30px;
+    }
+
+}
+
+@media print{
+
+    body{
+        background:white;
+    }
+
+    .header,
+    .actions,
+    .back{
+        display:none;
+    }
+
+    .container{
+        margin:0;
+        padding:0;
+        max-width:none;
+    }
+
+    .certificate{
+        box-shadow:none;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="header">
+
+    <h1>NAS COMPUTER ACADEMY</h1>
+
+    <p>Student Certificate</p>
+
+</div>
+
+
+<div class="container">
+
+
+<div class="certificate">
+
+<div class="inner">
+
+
+<div class="logo">
+    NAS COMPUTER ACADEMY
+</div>
+
+<div class="subtitle">
+    LEARN TODAY • LEAD TOMORROW
+</div>
+
+
+<div class="title">
+    CERTIFICATE
+</div>
+
+
+<div class="present">
+    This is proudly presented to
+</div>
+
+
+<div class="photo">
+
+    <span id="photoIcon">🎓</span>
+
+    <img
+        id="studentPhoto"
+        alt="Student Photo"
+    >
+
+</div>
+
+
+<div
+    class="student-name"
+    id="studentName"
+>
+    Loading...
+</div>
+
+
+<div class="text">
+
+    S/O
+
+    <b id="fatherName">
+        -
+    </b>
+
+</div>
+
+
+<div class="text">
+
+    has successfully completed the
+
+</div>
+
+
+<div
+    class="course"
+    id="course"
+>
+    -
+</div>
+
+
+<div class="info">
+
+    Student Roll No:
+    <b id="rollNo">-</b>
+
+    <br>
+
+    This certificate is issued by
+    <b>NAS Computer Academy</b>
+    as recognition of successful completion
+    of the above course.
+
+</div>
+
+
+<div class="signature-area">
+
+    <div class="signature">
+        Director / Authorized Signatory
+    </div>
+
+
+    <div class="seal">
+        NAS<br>
+        COMPUTER<br>
+        ACADEMY
+    </div>
+
+
+    <div class="signature">
+        Date of Issue
+        <br>
+        <span id="issueDate">-</span>
+    </div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<div
+    class="loading"
+    id="loading"
+>
+    Certificate loading...
+</div>
+
+
+<div
+    class="error"
+    id="errorMessage"
+>
+</div>
+
+
+<div class="actions">
+
+    <button onclick="window.print()">
+        🖨️ Print / Save
+    </button>
+
+    <button onclick="goDashboard()">
+        ← Dashboard
+    </button>
+
+</div>
+
+
+<a
+    href="student.html"
+    class="back"
+>
+    Student Dashboard
+</a>
+
+
+</div>
+
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+'https://ajfgbupabmykfhnaziee.supabase.co';
+
+const SUPABASE_KEY =
+'sb_publishable_-5AKwaHBuvhnYu-PwoF6NQ__auTupxV';
+
+const db =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =========================
+   LOGIN CHECK
+========================= */
+
+const rollNo =
+localStorage.getItem(
+    "studentRollNo"
+);
+
+if(!rollNo){
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+/* =========================
+   LOAD STUDENT
+========================= */
+
+async function loadCertificate(){
+
+    const loading =
+        document.getElementById("loading");
+
+    const errorBox =
+        document.getElementById("errorMessage");
+
+
+    try{
+
+        const result =
+        await db
+        .from("students")
+        .select(
+            "student_name,father_name,course,roll_no,photo_url"
+        )
+        .eq(
+            "roll_no",
+            rollNo
+        )
+        .maybeSingle();
+
+
+        if(result.error){
+
+            throw result.error;
+
+        }
+
+
+        if(!result.data){
+
+            throw new Error(
+                "Student record नहीं मिला।"
+            );
+
+        }
+
+
+        const student =
+            result.data;
+
+
+        /* NAME */
+
+        document.getElementById(
+            "studentName"
+        ).innerText =
+            student.student_name || "-";
+
+
+        /* FATHER */
+
+        document.getElementById(
+            "fatherName"
+        ).innerText =
+            student.father_name || "-";
+
+
+        /* COURSE */
+
+        document.getElementById(
+            "course"
+        ).innerText =
+            student.course || "-";
+
+
+        /* ROLL */
+
+        document.getElementById(
+            "rollNo"
+        ).innerText =
+            student.roll_no || "-";
+
+
+        /* DATE */
+
+        const date =
+        new Date().toLocaleDateString(
+            "en-IN",
+            {
+                day:"2-digit",
+                month:"2-digit",
+                year:"numeric"
+            }
+        );
+
+        document.getElementById(
+            "issueDate"
+        ).innerText =
+            date;
+
+
+        /* PHOTO */
+
+        if(student.photo_url){
+
+            const image =
+                document.getElementById(
+                    "studentPhoto"
+                );
+
+            const icon =
+                document.getElementById(
+                    "photoIcon"
+                );
+
+            image.src =
+                student.photo_url;
+
+            image.onload =
+            function(){
+
+                image.style.display =
+                    "block";
+
+                icon.style.display =
+                    "none";
+
+            };
+
+        }
+
+
+        loading.style.display =
+            "none";
+
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        loading.style.display =
+            "none";
+
+        errorBox.innerHTML =
+            "Certificate load नहीं हो सका।<br>" +
+            error.message;
+
+        errorBox.style.display =
+            "block";
+
+    }
+
+}
+
+
+/* =========================
+   DASHBOARD
+========================= */
+
+function goDashboard(){
+
+    window.location.href =
+        "student.html";
+
+}
+
+
+loadCertificate();
+
+</script>
+
+
+</body>
+</html>

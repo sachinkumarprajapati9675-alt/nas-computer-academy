@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Student Login - NAS Computer Academy</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    min-height:100vh;
+    background:linear-gradient(
+        135deg,
+        #071a33,
+        #123f70
+    );
+    color:#172033;
+}
+
+.header{
+    text-align:center;
+    color:white;
+    padding:45px 20px 25px;
+}
+
+.header h1{
+    font-size:26px;
+}
+
+.header p{
+    margin-top:7px;
+    color:#dce8f5;
+    font-size:14px;
+}
+
+.container{
+    max-width:450px;
+    margin:20px auto;
+    padding:0 15px;
+}
+
+.login-box{
+    background:white;
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 12px 35px rgba(0,0,0,.25);
+}
+
+.login-box h2{
+    text-align:center;
+    color:#0b3158;
+    margin-bottom:8px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#777;
+    font-size:13px;
+    margin-bottom:22px;
+}
+
+label{
+    display:block;
+    margin:15px 0 7px;
+    font-size:14px;
+    font-weight:bold;
+}
+
+input{
+    width:100%;
+    padding:13px;
+    border:1px solid #d5dce5;
+    border-radius:9px;
+    font-size:14px;
+    outline:none;
+}
+
+input:focus{
+    border-color:#1769aa;
+    box-shadow:0 0 0 3px rgba(23,105,170,.1);
+}
+
+button{
+    width:100%;
+    margin-top:24px;
+    padding:14px;
+    border:0;
+    border-radius:10px;
+    background:linear-gradient(
+        135deg,
+        #0b3158,
+        #1769aa
+    );
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+.message{
+    display:none;
+    margin-top:16px;
+    padding:14px;
+    border-radius:9px;
+    text-align:center;
+    font-size:13px;
+    font-weight:bold;
+    line-height:1.6;
+}
+
+.error{
+    background:#fff0f0;
+    color:#b00020;
+}
+
+.register{
+    display:block;
+    text-align:center;
+    margin-top:20px;
+    color:#0b3158;
+    font-weight:bold;
+    text-decoration:none;
+}
+
+.home{
+    display:block;
+    width:max-content;
+    margin:20px auto;
+    padding:10px 17px;
+    background:white;
+    color:#0b3158;
+    text-decoration:none;
+    border-radius:9px;
+    font-size:13px;
+    font-weight:bold;
+}
+
+.footer{
+    text-align:center;
+    color:#c8d5e3;
+    font-size:11px;
+    padding:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="header">
+
+    <h1>
+        NAS COMPUTER ACADEMY
+    </h1>
+
+    <p>
+        Student Login Portal
+    </p>
+
+</div>
+
+
+<div class="container">
+
+<div class="login-box">
+
+    <h2>
+        🔐 Student Login
+    </h2>
+
+    <p class="subtitle">
+        अपने पुराने Student Record में Login करें
+    </p>
+
+
+    <form id="loginForm">
+
+
+        <label>
+            Student Roll Number
+        </label>
+
+        <input
+            type="text"
+            id="rollNo"
+            placeholder="NAS-2026-123456"
+            required
+        >
+
+
+        <label>
+            Student Name
+        </label>
+
+        <input
+            type="text"
+            id="studentName"
+            placeholder="अपना पूरा नाम"
+            required
+        >
+
+
+        <label>
+            Father's Name
+        </label>
+
+        <input
+            type="text"
+            id="fatherName"
+            placeholder="पिता का पूरा नाम"
+            required
+        >
+
+
+        <button
+            type="submit"
+            id="loginButton"
+        >
+            Login
+        </button>
+
+    </form>
+
+
+    <div
+        class="message error"
+        id="errorMessage"
+    ></div>
+
+
+    <a
+        href="register.html"
+        class="register"
+    >
+        📝 New Student? Register Now
+    </a>
+
+</div>
+
+
+<a
+    href="index.html"
+    class="home"
+>
+    ← Home Page
+</a>
+
+
+</div>
+
+
+<div class="footer">
+
+    © 2026 NAS Computer Academy
+
+</div>
+
+
+<script>
+
+/* =========================
+   SUPABASE CONNECTION
+========================= */
+
+const SUPABASE_URL =
+'https://ajfgbupabmykfhnaziee.supabase.co';
+
+const SUPABASE_KEY =
+'sb_publishable_-5AKwaHBuvhnYu-PwoF6NQ__auTupxV';
+
+const db =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const loginForm =
+document.getElementById(
+    "loginForm"
+);
+
+const loginButton =
+document.getElementById(
+    "loginButton"
+);
+
+const errorMessage =
+document.getElementById(
+    "errorMessage"
+);
+
+
+/* =========================
+   LOGIN
+========================= */
+
+loginForm.addEventListener(
+"submit",
+async function(e){
+
+    e.preventDefault();
+
+    errorMessage.style.display =
+        "none";
+
+
+    const rollNo =
+    document.getElementById(
+        "rollNo"
+    ).value.trim();
+
+
+    const studentName =
+    document.getElementById(
+        "studentName"
+    ).value.trim();
+
+
+    const fatherName =
+    document.getElementById(
+        "fatherName"
+    ).value.trim();
+
+
+    if(
+        !rollNo ||
+        !studentName ||
+        !fatherName
+    ){
+
+        errorMessage.innerText =
+            "कृपया सभी details भरें।";
+
+        errorMessage.style.display =
+            "block";
+
+        return;
+    }
+
+
+    loginButton.disabled =
+        true;
+
+    loginButton.innerText =
+        "Checking...";
+
+
+    try{
+
+
+        /* =========================
+           FIND STUDENT
+        ========================= */
+
+        const result =
+        await db
+        .from("students")
+        .select("*")
+        .eq("roll_no",rollNo)
+        .ilike("student_name",studentName)
+        .ilike("father_name",fatherName)
+        .maybeSingle();
+
+
+        if(result.error){
+
+            throw result.error;
+
+        }
+
+
+        if(!result.data){
+
+            errorMessage.innerText =
+                "Roll Number, Student Name या Father's Name सही नहीं है।";
+
+            errorMessage.style.display =
+                "block";
+
+            loginButton.disabled =
+                false;
+
+            loginButton.innerText =
+                "Login";
+
+            return;
+        }
+
+
+        /* =========================
+           SAVE LOGIN SESSION
+        ========================= */
+
+        localStorage.setItem(
+            "studentRollNo",
+            result.data.roll_no
+        );
+
+
+        localStorage.setItem(
+            "studentName",
+            result.data.student_name
+        );
+
+
+        localStorage.setItem(
+            "fatherName",
+            result.data.father_name
+        );
+
+
+        localStorage.setItem(
+            "studentPhoto",
+            result.data.photo_url || ""
+        );
+
+
+        /* =========================
+           OPEN DASHBOARD
+        ========================= */
+
+        window.location.href =
+            "student.html";
+
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        errorMessage.innerText =
+            "Login failed: " +
+            error.message;
+
+        errorMessage.style.display =
+            "block";
+
+
+        loginButton.disabled =
+            false;
+
+        loginButton.innerText =
+            "Login";
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>

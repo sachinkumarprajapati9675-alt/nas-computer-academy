@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Panel - NAS Computer Academy</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#eef3f8;
+    color:#172033;
+}
+
+.header{
+    background:linear-gradient(135deg,#071a33,#123f70);
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+
+.header h1{
+    font-size:23px;
+}
+
+.header p{
+    margin-top:5px;
+    font-size:13px;
+    color:#dce8f5;
+}
+
+.container{
+    max-width:900px;
+    margin:25px auto;
+    padding:0 15px;
+}
+
+.card{
+    background:white;
+    border-radius:15px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 8px 25px rgba(0,0,0,.12);
+}
+
+.card h2{
+    color:#0b3158;
+    margin-bottom:15px;
+    font-size:19px;
+}
+
+.search{
+    display:flex;
+    gap:10px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border:1px solid #d5dce5;
+    border-radius:8px;
+    font-size:14px;
+    outline:none;
+}
+
+input:focus{
+    border-color:#0b3158;
+}
+
+button{
+    border:0;
+    border-radius:8px;
+    padding:12px 18px;
+    background:#0b3158;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:.9;
+}
+
+.student-info{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.info{
+    background:#f5f8fb;
+    padding:12px;
+    border-radius:8px;
+}
+
+.label{
+    color:#777;
+    font-size:12px;
+}
+
+.value{
+    margin-top:5px;
+    font-weight:bold;
+    color:#0b3158;
+}
+
+.marks-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.save{
+    width:100%;
+    margin-top:15px;
+}
+
+.message{
+    display:none;
+    padding:12px;
+    border-radius:8px;
+    margin-top:15px;
+    text-align:center;
+    font-size:13px;
+}
+
+.success{
+    background:#e9f8ef;
+    color:#16803c;
+}
+
+.error{
+    background:#fff0f0;
+    color:#b00020;
+}
+
+.loading{
+    display:none;
+    text-align:center;
+    color:#777;
+    padding:15px;
+}
+
+@media(max-width:600px){
+
+    .student-info,
+    .marks-grid{
+        grid-template-columns:1fr;
+    }
+
+    .search{
+        flex-direction:column;
+    }
+
+    button{
+        width:100%;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="header">
+
+    <h1>
+        NAS COMPUTER ACADEMY
+    </h1>
+
+    <p>
+        Admin Management Panel
+    </p>
+
+</div>
+
+
+<div class="container">
+
+
+<!-- SEARCH -->
+
+<div class="card">
+
+    <h2>
+        🔎 Search Student
+    </h2>
+
+    <div class="search">
+
+        <input
+            type="text"
+            id="searchRoll"
+            placeholder="Student Roll No. डालें"
+        >
+
+        <button onclick="searchStudent()">
+            Search
+        </button>
+
+    </div>
+
+    <div
+        class="loading"
+        id="loading"
+    >
+        Student searching...
+    </div>
+
+</div>
+
+
+<!-- STUDENT DETAILS -->
+
+<div
+    class="card"
+    id="studentCard"
+    style="display:none;"
+>
+
+    <h2>
+        👨‍🎓 Student Details
+    </h2>
+
+
+    <div class="student-info">
+
+        <div class="info">
+
+            <div class="label">
+                Student Name
+            </div>
+
+            <div
+                class="value"
+                id="studentName"
+            >
+                -
+            </div>
+
+        </div>
+
+
+        <div class="info">
+
+            <div class="label">
+                Father's Name
+            </div>
+
+            <div
+                class="value"
+                id="fatherName"
+            >
+                -
+            </div>
+
+        </div>
+
+
+        <div class="info">
+
+            <div class="label">
+                Mobile
+            </div>
+
+            <div
+                class="value"
+                id="mobile"
+            >
+                -
+            </div>
+
+        </div>
+
+
+        <div class="info">
+
+            <div class="label">
+                Course
+            </div>
+
+            <div
+                class="value"
+                id="course"
+            >
+                -
+            </div>
+
+        </div>
+
+
+        <div class="info">
+
+            <div class="label">
+                Roll No.
+            </div>
+
+            <div
+                class="value"
+                id="rollNo"
+            >
+                -
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- MARKS -->
+
+<div
+    class="card"
+    id="marksCard"
+    style="display:none;"
+>
+
+    <h2>
+        📊 Update Student Marks
+    </h2>
+
+
+    <div class="marks-grid">
+
+
+        <div>
+
+            <div class="label">
+                Computer Fundamentals
+            </div>
+
+            <input
+                type="number"
+                id="computerFundamentals"
+                min="0"
+                max="100"
+                placeholder="0 - 100"
+            >
+
+        </div>
+
+
+        <div>
+
+            <div class="label">
+                MS Office
+            </div>
+
+            <input
+                type="number"
+                id="msOffice"
+                min="0"
+                max="100"
+                placeholder="0 - 100"
+            >
+
+        </div>
+
+
+        <div>
+
+            <div class="label">
+                Internet & Digital Skills
+            </div>
+
+            <input
+                type="number"
+                id="internetSkills"
+                min="0"
+                max="100"
+                placeholder="0 - 100"
+            >
+
+        </div>
+
+
+        <div>
+
+            <div class="label">
+                Typing
+            </div>
+
+            <input
+                type="number"
+                id="typing"
+                min="0"
+                max="100"
+                placeholder="0 - 100"
+            >
+
+        </div>
+
+
+        <div>
+
+            <div class="label">
+                Practical
+            </div>
+
+            <input
+                type="number"
+                id="practical"
+                min="0"
+                max="100"
+                placeholder="0 - 100"
+            >
+
+        </div>
+
+
+    </div>
+
+
+    <button
+        class="save"
+        onclick="saveMarks()"
+    >
+        💾 Save Marks
+    </button>
+
+
+    <div
+        class="message success"
+        id="successMessage"
+    >
+        Marks successfully save हो गए। ✅
+    </div>
+
+
+    <div
+        class="message error"
+        id="errorMessage"
+    >
+    </div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+'https://ajfgbupabmykfhnazie.supabase.co';
+
+const SUPABASE_KEY =
+'sb_publishable_-5AKwaHBuvhnYu-PwoF6NQ__auTupxV';
+
+const db =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* Current student */
+
+let currentStudent = null;
+
+
+/* =========================
+   SEARCH STUDENT
+========================= */
+
+async function searchStudent(){
+
+    const roll =
+        document.getElementById(
+            "searchRoll"
+        ).value.trim();
+
+
+    const loading =
+        document.getElementById(
+            "loading"
+        );
+
+
+    const studentCard =
+        document.getElementById(
+            "studentCard"
+        );
+
+
+    const marksCard =
+        document.getElementById(
+            "marksCard"
+        );
+
+
+    if(!roll){
+
+        alert(
+            "पहले Roll No. डालें।"
+        );
+
+        return;
+
+    }
+
+
+    loading.style.display =
+        "block";
+
+
+    studentCard.style.display =
+        "none";
+
+    marksCard.style.display =
+        "none";
+
+
+    try{
+
+        const result =
+        await db
+        .from("students")
+        .select(`
+            id,
+            student_name,
+            father_name,
+            mobile,
+            course,
+            roll_no,
+            computer_fundamentals,
+            ms_office,
+            internet_skills,
+            typing,
+            practical
+        `)
+        .eq(
+            "roll_no",
+            roll
+        )
+        .maybeSingle();
+
+
+        if(result.error){
+
+            throw result.error;
+
+        }
+
+
+        if(!result.data){
+
+            throw new Error(
+                "इस Roll No. का student नहीं मिला।"
+            );
+
+        }
+
+
+        currentStudent =
+            result.data;
+
+
+        /* DETAILS */
+
+        document.getElementById(
+            "studentName"
+        ).innerText =
+            currentStudent.student_name || "-";
+
+
+        document.getElementById(
+            "fatherName"
+        ).innerText =
+            currentStudent.father_name || "-";
+
+
+        document.getElementById(
+            "mobile"
+        ).innerText =
+            currentStudent.mobile || "-";
+
+
+        document.getElementById(
+            "course"
+        ).innerText =
+            currentStudent.course || "-";
+
+
+        document.getElementById(
+            "rollNo"
+        ).innerText =
+            currentStudent.roll_no || "-";
+
+
+        /* MARKS */
+
+        document.getElementById(
+            "computerFundamentals"
+        ).value =
+            currentStudent.computer_fundamentals ?? "";
+
+
+        document.getElementById(
+            "msOffice"
+        ).value =
+            currentStudent.ms_office ?? "";
+
+
+        document.getElementById(
+            "internetSkills"
+        ).value =
+            currentStudent.internet_skills ?? "";
+
+
+        document.getElementById(
+            "typing"
+        ).value =
+            currentStudent.typing ?? "";
+
+
+        document.getElementById(
+            "practical"
+        ).value =
+            currentStudent.practical ?? "";
+
+
+        studentCard.style.display =
+            "block";
+
+        marksCard.style.display =
+            "block";
+
+    }
+    catch(error){
+
+        showError(
+            error.message
+        );
+
+    }
+    finally{
+
+        loading.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =========================
+   SAVE MARKS
+========================= */
+
+async function saveMarks(){
+
+    if(!currentStudent){
+
+        alert(
+            "पहले student search करें।"
+        );
+
+        return;
+
+    }
+
+
+    const marks = [
+
+        Number(
+            document.getElementById(
+                "computerFundamentals"
+            ).value
+        ),
+
+        Number(
+            document.getElementById(
+                "msOffice"
+            ).value
+        ),
+
+        Number(
+            document.getElementById(
+                "internetSkills"
+            ).value
+        ),
+
+        Number(
+            document.getElementById(
+                "typing"
+            ).value
+        ),
+
+        Number(
+            document.getElementById(
+                "practical"
+            ).value
+        )
+
+    ];
+
+
+    for(const mark of marks){
+
+        if(
+            !Number.isInteger(mark) ||
+            mark < 0 ||
+            mark > 100
+        ){
+
+            showError(
+                "हर subject के marks 0 से 100 के बीच पूरे अंक होने चाहिए।"
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    try{
+
+        const result =
+        await db
+        .from("students")
+        .update({
+
+            computer_fundamentals:
+                marks[0],
+
+            ms_office:
+                marks[1],
+
+            internet_skills:
+                marks[2],
+
+            typing:
+                marks[3],
+
+            practical:
+                marks[4]
+
+        })
+        .eq(
+            "id",
+            currentStudent.id
+        );
+
+
+        if(result.error){
+
+            throw result.error;
+
+        }
+
+
+        currentStudent.computer_fundamentals =
+            marks[0];
+
+        currentStudent.ms_office =
+            marks[1];
+
+        currentStudent.internet_skills =
+            marks[2];
+
+        currentStudent.typing =
+            marks[3];
+
+        currentStudent.practical =
+            marks[4];
+
+
+        const success =
+            document.getElementById(
+                "successMessage"
+            );
+
+        success.style.display =
+            "block";
+
+
+        document.getElementById(
+            "errorMessage"
+        ).style.display =
+            "none";
+
+
+        setTimeout(
+            ()=>{
+                success.style.display =
+                    "none";
+            },
+            3000
+        );
+
+    }
+    catch(error){
+
+        showError(
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================
+   ERROR
+========================= */
+
+function showError(message){
+
+    const box =
+        document.getElementById(
+            "errorMessage"
+        );
+
+    box.innerText =
+        message;
+
+    box.style.display =
+        "block";
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Student Registration - NAS Computer Academy</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#eef3f9,#dce8f5);
+    color:#172033;
+    min-height:100vh;
+}
+
+.header{
+    background:linear-gradient(135deg,#071a33,#123f70);
+    color:white;
+    text-align:center;
+    padding:25px 15px;
+}
+
+.header h1{
+    font-size:24px;
+}
+
+.header p{
+    margin-top:7px;
+    color:#dce8f5;
+}
+
+.container{
+    max-width:500px;
+    margin:30px auto;
+    padding:0 15px;
+}
+
+.form-box{
+    background:white;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 10px 30px rgba(0,0,0,.12);
+}
+
+.form-box h2{
+    text-align:center;
+    color:#0b3158;
+}
+
+.subtitle{
+    text-align:center;
+    color:#777;
+    font-size:13px;
+    margin:8px 0 22px;
+}
+
+label{
+    display:block;
+    margin:15px 0 7px;
+    font-size:14px;
+    font-weight:bold;
+}
+
+input,
+select{
+    width:100%;
+    padding:13px;
+    border:1px solid #d5dce5;
+    border-radius:9px;
+    font-size:14px;
+    outline:none;
+}
+
+input:focus,
+select:focus{
+    border-color:#1769aa;
+}
+
+.photo-preview{
+    width:110px;
+    height:110px;
+    margin:12px auto;
+    border-radius:50%;
+    border:4px solid #dce6f0;
+    background:#eef3f8;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    font-size:40px;
+}
+
+.photo-preview img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:none;
+}
+
+.photo-help{
+    text-align:center;
+    color:#777;
+    font-size:11px;
+}
+
+button{
+    width:100%;
+    margin-top:24px;
+    padding:14px;
+    border:0;
+    border-radius:10px;
+    background:linear-gradient(135deg,#0b3158,#1769aa);
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+}
+
+button:disabled{
+    opacity:.6;
+}
+
+.message{
+    display:none;
+    margin-top:16px;
+    padding:14px;
+    border-radius:9px;
+    text-align:center;
+    font-size:13px;
+    font-weight:bold;
+    line-height:1.6;
+}
+
+.success{
+    background:#e8f8ee;
+    color:#16803c;
+}
+
+.error{
+    background:#fff0f0;
+    color:#b00020;
+}
+
+.back{
+    display:block;
+    width:max-content;
+    margin:20px auto;
+    padding:11px 18px;
+    background:#0b3158;
+    color:white;
+    text-decoration:none;
+    border-radius:9px;
+    font-size:13px;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>NAS COMPUTER ACADEMY</h1>
+    <p>Student Registration Portal</p>
+</div>
+
+<div class="container">
+
+<div class="form-box">
+
+<h2>📝 Student Registration</h2>
+
+<p class="subtitle">
+नए Student के लिए Registration करें
+</p>
+
+<form id="registrationForm">
+
+<label>Student Name</label>
+
+<input
+    type="text"
+    id="studentName"
+    placeholder="पूरा नाम"
+    required
+>
+
+<label>Father's Name</label>
+
+<input
+    type="text"
+    id="fatherName"
+    placeholder="पिता का नाम"
+    required
+>
+
+<label>Mobile Number</label>
+
+<input
+    type="tel"
+    id="mobile"
+    placeholder="10 digit mobile number"
+    maxlength="10"
+    inputmode="numeric"
+    required
+>
+
+<label>Course</label>
+
+<select id="course" required>
+
+<option value="">
+-- Course चुनें --
+</option>
+
+<option value="Basic Computer Course">
+Basic Computer Course
+</option>
+
+<option value="MS Office">
+MS Office
+</option>
+
+<option value="Internet & Digital Skills">
+Internet & Digital Skills
+</option>
+
+<option value="Typing Course">
+Typing Course
+</option>
+
+</select>
+
+<label>Student Photo</label>
+
+<div class="photo-preview">
+
+<span id="photoIcon">📷</span>
+
+<img
+    id="photoPreview"
+    alt="Student Photo"
+>
+
+</div>
+
+<input
+    type="file"
+    id="studentPhoto"
+    accept="image/jpeg,image/png,image/webp"
+    required
+>
+
+<div class="photo-help">
+JPG, PNG या WEBP • अधिकतम 5 MB
+</div>
+
+<button
+    type="submit"
+    id="registerButton"
+>
+Register Now
+</button>
+
+</form>
+
+<div
+    class="message success"
+    id="successMessage"
+></div>
+
+<div
+    class="message error"
+    id="errorMessage"
+></div>
+
+</div>
+
+<a href="index.html" class="back">
+← Home Page
+</a>
+
+</div>
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+'https://ajfgbupabmykfhnaziee.supabase.co';
+
+const SUPABASE_KEY =
+'sb_publishable_-5AKwaHBuvhnYu-PwoF6NQ__auTupxV';
+
+const db =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const form =
+document.getElementById("registrationForm");
+
+const button =
+document.getElementById("registerButton");
+
+const successMessage =
+document.getElementById("successMessage");
+
+const errorMessage =
+document.getElementById("errorMessage");
+
+const photoInput =
+document.getElementById("studentPhoto");
+
+const photoPreview =
+document.getElementById("photoPreview");
+
+const photoIcon =
+document.getElementById("photoIcon");
+
+
+/* =========================
+   PHOTO PREVIEW
+========================= */
+
+photoInput.addEventListener(
+"change",
+function(){
+
+    const file =
+    photoInput.files[0];
+
+    if(!file){
+        return;
+    }
+
+    if(file.size > 5 * 1024 * 1024){
+
+        alert(
+            "Photo 5 MB से छोटी होनी चाहिए।"
+        );
+
+        photoInput.value = "";
+        return;
+    }
+
+    const reader =
+    new FileReader();
+
+    reader.onload =
+    function(e){
+
+        photoPreview.src =
+            e.target.result;
+
+        photoPreview.style.display =
+            "block";
+
+        photoIcon.style.display =
+            "none";
+    };
+
+    reader.readAsDataURL(file);
+});
+
+
+/* =========================
+   REGISTER
+========================= */
+
+form.addEventListener(
+"submit",
+async function(e){
+
+    e.preventDefault();
+
+    successMessage.style.display =
+        "none";
+
+    errorMessage.style.display =
+        "none";
+
+
+    const studentName =
+    document.getElementById(
+        "studentName"
+    ).value.trim();
+
+
+    const fatherName =
+    document.getElementById(
+        "fatherName"
+    ).value.trim();
+
+
+    const mobile =
+    document.getElementById(
+        "mobile"
+    ).value.trim();
+
+
+    const course =
+    document.getElementById(
+        "course"
+    ).value;
+
+
+    const photoFile =
+    photoInput.files[0];
+
+
+    /* MOBILE */
+
+    if(!/^[0-9]{10}$/.test(mobile)){
+
+        errorMessage.innerText =
+            "Mobile number 10 digit का होना चाहिए।";
+
+        errorMessage.style.display =
+            "block";
+
+        return;
+    }
+
+
+    /* PHOTO */
+
+    if(!photoFile){
+
+        errorMessage.innerText =
+            "कृपया Student Photo चुनें।";
+
+        errorMessage.style.display =
+            "block";
+
+        return;
+    }
+
+
+    button.disabled = true;
+
+    button.innerText =
+        "Checking...";
+
+
+    try{
+
+        /* =========================
+           DUPLICATE MOBILE CHECK
+        ========================= */
+
+        const existingResult =
+        await db
+        .from("students")
+        .select("roll_no")
+        .eq("mobile",mobile)
+        .maybeSingle();
+
+
+        if(existingResult.error){
+
+            throw existingResult.error;
+
+        }
+
+
+        if(existingResult.data){
+
+            errorMessage.innerHTML =
+                "यह Mobile Number पहले से Registered है।<br>" +
+                "Roll No: <b>" +
+                existingResult.data.roll_no +
+                "</b>";
+
+            errorMessage.style.display =
+                "block";
+
+            button.disabled = false;
+
+            button.innerText =
+                "Register Now";
+
+            return;
+        }
+
+
+        /* =========================
+           CREATE ROLL NUMBER
+        ========================= */
+
+        const rollNo =
+            "NAS-" +
+            new Date().getFullYear() +
+            "-" +
+            Date.now()
+            .toString()
+            .slice(-6);
+
+
+        /* =========================
+           PHOTO UPLOAD
+        ========================= */
+
+        const extension =
+            photoFile.name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+
+        const fileName =
+            rollNo +
+            "-" +
+            Date.now() +
+            "." +
+            extension;
+
+
+        const filePath =
+            "students/" +
+            fileName;
+
+
+        const uploadResult =
+        await db
+        .storage
+        .from("student-photos")
+        .upload(
+            filePath,
+            photoFile,
+            {
+                contentType:
+                    photoFile.type,
+
+                upsert:false
+            }
+        );
+
+
+        if(uploadResult.error){
+
+            throw new Error(
+                "Photo upload failed: " +
+                uploadResult.error.message
+            );
+
+        }
+
+
+        /* =========================
+           PUBLIC PHOTO URL
+        ========================= */
+
+        const publicResult =
+        db
+        .storage
+        .from("student-photos")
+        .getPublicUrl(
+            filePath
+        );
+
+
+        const photoUrl =
+            publicResult.data.publicUrl;
+
+
+        /* =========================
+           SAVE STUDENT
+        ========================= */
+
+        const result =
+        await db
+        .from("students")
+        .insert({
+
+            student_name:
+                studentName,
+
+            father_name:
+                fatherName,
+
+            mobile:
+                mobile,
+
+            course:
+                course,
+
+            roll_no:
+                rollNo,
+
+            photo_url:
+                photoUrl
+
+        })
+        .select()
+        .single();
+
+
+        if(result.error){
+
+            throw result.error;
+
+        }
+
+
+        /* =========================
+           SAVE LOGIN DATA
+        ========================= */
+
+        localStorage.setItem(
+            "studentRollNo",
+            rollNo
+        );
+
+        localStorage.setItem(
+            "studentName",
+            studentName
+        );
+
+
+        /* =========================
+           SUCCESS
+        ========================= */
+
+        successMessage.innerHTML =
+            "Registration सफल हो गया! 🎉<br>" +
+            "आपका Roll No: <b>" +
+            rollNo +
+            "</b>";
+
+        successMessage.style.display =
+            "block";
+
+
+        button.innerText =
+            "Registration Successful";
+
+
+        /* =========================
+           DASHBOARD
+        ========================= */
+
+        setTimeout(
+            function(){
+
+                window.location.href =
+                    "student.html";
+
+            },
+            1500
+        );
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        errorMessage.innerText =
+            "Registration failed: " +
+            err.message;
+
+        errorMessage.style.display =
+            "block";
+
+
+        button.disabled =
+            false;
+
+        button.innerText =
+            "Register Now";
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
